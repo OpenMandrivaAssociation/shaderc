@@ -3,25 +3,23 @@
 %define devname %mklibname %{name} -d
 %define staticname %mklibname %{name} -d -s
 
-# Glslang revision from packaged version
-%define glslang_version 11.0.0
-
 Name:           shaderc
 Version:        2020.3
-Release:        %mkrel 1
+Release:        1
 Summary:        A collection of tools, libraries, and tests for Vulkan shader compilation
 Group:          System/Libraries
 License:        ASL 2.0
 URL:            https://github.com/google/shaderc
 Source0:        https://github.com/google/shaderc/archive/v%{version}/%{name}-%{version}.tar.gz
 # Patch to unbundle 3rd party code
-Patch1:         0001-Drop-third-party-code-in-CMakeLists.txt.patch
-Patch2:         shaderc-2020.3-system-glslang.patch
+#Patch1:         0001-Drop-third-party-code-in-CMakeLists.txt.patch
+#Patch2:         shaderc-2020.3-system-glslang.patch
 
 BuildRequires:  cmake
-BuildRequires:  glslang-devel = %{glslang_version}
+# We can't use own glslang because we ude older version 8.X. For shaderc is needed ver 11.
+#BuildRequires:  glslang-devel
 BuildRequires:  pkgconfig(SPIRV-Tools)
-BuildRequires:  python3
+BuildRequires:  python
 BuildRequires:  spirv-headers
 
 %description
@@ -69,31 +67,28 @@ Static libraries for libshaderc.
 %prep
 %autosetup -p1 -n %{name}-%{version}
 
-rm -rf third_party
+#rm -rf third_party
 
 # Stolen from Gentoo
 # Create build-version.inc since we want to use our packaged
 # SPIRV-Tools and glslang
-echo \"shaderc $(grep -m1 -o '^v[[:digit:]]\{4\}\.[[:digit:]]\(-dev\)\? [[:digit:]]\{4\}-[[:digit:]]\{2\}-[[:digit:]]\{2\}$' CHANGES)\" \
-        > glslc/src/build-version.inc
-echo \"spirv-tools $(grep -m1 -o '^v[[:digit:]]\{4\}\.[[:digit:]]\(-dev\)\? [[:digit:]]\{4\}-[[:digit:]]\{2\}-[[:digit:]]\{2\}$' /usr/share/doc/spirv-tools/CHANGES)\" \
-        >> glslc/src/build-version.inc
-echo \"glslang %{glslang_version}\" >> glslc/src/build-version.inc
+#echo \"shaderc $(grep -m1 -o '^v[[:digit:]]\{4\}\.[[:digit:]]\(-dev\)\? [[:digit:]]\{4\}-[[:digit:]]\{2\}-[[:digit:]]\{2\}$' CHANGES)\" \
+#        > glslc/src/build-version.inc
+#echo \"spirv-tools $(grep -m1 -o '^v[[:digit:]]\{4\}\.[[:digit:]]\(-dev\)\? [[:digit:]]\{4\}-[[:digit:]]\{2\}-[[:digit:]]\{2\}$' /usr/share/doc/spirv-tools/CHANGES)\" \
+#        >> glslc/src/build-version.inc
+#echo \"glslang %{glslang_version}\" >> glslc/src/build-version.inc
 
 # Point to correct include
-sed -i 's|SPIRV/GlslangToSpv.h|glslang/SPIRV/GlslangToSpv.h|' libshaderc_util/src/compiler.cc
+#sed -i 's|SPIRV/GlslangToSpv.h|glslang/SPIRV/GlslangToSpv.h|' libshaderc_util/src/compiler.cc
 
 %build
 # We disable the tests because they don't work with our unbundling of 3rd party.
 # See https://github.com/google/shaderc/issues/470
 %cmake -DSHADERC_SKIP_TESTS=ON
-%cmake_build
+%make_build
 
 %install
-%cmake_install
-
-%check
-%ctest
+%make_install
 
 %files -n glslc
 %doc glslc/README.asciidoc
