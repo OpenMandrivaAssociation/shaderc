@@ -4,7 +4,7 @@
 %define staticname %mklibname %{name} -d -s
 
 Name:           shaderc
-Version:        2020.3
+Version:        2020.4
 Release:        1
 Summary:        A collection of tools, libraries, and tests for Vulkan shader compilation
 Group:          System/Libraries
@@ -12,12 +12,12 @@ License:        ASL 2.0
 URL:            https://github.com/google/shaderc
 Source0:        https://github.com/google/shaderc/archive/v%{version}/%{name}-%{version}.tar.gz
 # Patch to unbundle 3rd party code
-#Patch1:         0001-Drop-third-party-code-in-CMakeLists.txt.patch
-#Patch2:         shaderc-2020.3-system-glslang.patch
+Patch1:         https://src.fedoraproject.org/rpms/shaderc/raw/master/f/0001-Drop-third-party-code-in-CMakeLists.txt.patch
+Patch2:		shaderc-2020.4-system-libs.patch
 
 BuildRequires:  cmake
-# We can't use own glslang because we ude older version 8.X. For shaderc is needed ver 11.
-#BuildRequires:  glslang-devel
+BuildRequires:	ninja
+BuildRequires:  glslang-devel >= 10.11.0.0
 BuildRequires:  pkgconfig(SPIRV-Tools)
 BuildRequires:  python
 BuildRequires:  spirv-headers
@@ -72,23 +72,28 @@ Static libraries for libshaderc.
 # Stolen from Gentoo
 # Create build-version.inc since we want to use our packaged
 # SPIRV-Tools and glslang
-#echo \"shaderc $(grep -m1 -o '^v[[:digit:]]\{4\}\.[[:digit:]]\(-dev\)\? [[:digit:]]\{4\}-[[:digit:]]\{2\}-[[:digit:]]\{2\}$' CHANGES)\" \
-#        > glslc/src/build-version.inc
-#echo \"spirv-tools $(grep -m1 -o '^v[[:digit:]]\{4\}\.[[:digit:]]\(-dev\)\? [[:digit:]]\{4\}-[[:digit:]]\{2\}-[[:digit:]]\{2\}$' /usr/share/doc/spirv-tools/CHANGES)\" \
-#        >> glslc/src/build-version.inc
-#echo \"glslang %{glslang_version}\" >> glslc/src/build-version.inc
+echo \"shaderc $(grep -m1 -o '^v[[:digit:]]\{4\}\.[[:digit:]]\(-dev\)\? [[:digit:]]\{4\}-[[:digit:]]\{2\}-[[:digit:]]\{2\}$' CHANGES)\" \
+        > glslc/src/build-version.inc
+#" <--- workaround for vim syntax highlighting bug, ignore
+echo \"spirv-tools $(rpm -q --qf '%%{VERSION}' spirv-tools)\" \
+        >> glslc/src/build-version.inc
+#" <--- workaround for vim syntax highlighting bug, ignore
+echo \"glslang 11.0.0 g\" >> glslc/src/build-version.inc
+#" <--- workaround for vim syntax highlighting bug, ignore
 
 # Point to correct include
+%if 0
 #sed -i 's|SPIRV/GlslangToSpv.h|glslang/SPIRV/GlslangToSpv.h|' libshaderc_util/src/compiler.cc
+%endif
+%cmake -DSHADERC_SKIP_TESTS=ON -G Ninja
 
 %build
 # We disable the tests because they don't work with our unbundling of 3rd party.
 # See https://github.com/google/shaderc/issues/470
-%cmake -DSHADERC_SKIP_TESTS=ON
-%make_build
+%ninja_build -C build
 
 %install
-%make_install
+%ninja_install -C build
 
 %files -n glslc
 %doc glslc/README.asciidoc
