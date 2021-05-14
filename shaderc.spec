@@ -1,26 +1,26 @@
-%define major   1
+%define major 1
 %define libname %mklibname %{name} %{major}
 %define devname %mklibname %{name} -d
 %define staticname %mklibname %{name} -d -s
 
-Name:           shaderc
-Version:        2020.4
-Release:        1
-Summary:        A collection of tools, libraries, and tests for Vulkan shader compilation
-Group:          System/Libraries
-License:        ASL 2.0
-URL:            https://github.com/google/shaderc
-Source0:        https://github.com/google/shaderc/archive/v%{version}/%{name}-%{version}.tar.gz
+Name:		shaderc
+Version:	2021.0
+Release:	1
+Summary:	A collection of tools, libraries, and tests for Vulkan shader compilation
+Group:		System/Libraries
+License:	ASL 2.0
+URL:		https://github.com/google/shaderc
+Source0:	https://github.com/google/shaderc/archive/v%{version}/%{name}-%{version}.tar.gz
 # Patch to unbundle 3rd party code
-Patch1:         https://src.fedoraproject.org/rpms/shaderc/raw/master/f/0001-Drop-third-party-code-in-CMakeLists.txt.patch
+Patch1:		https://src.fedoraproject.org/rpms/shaderc/raw/master/f/0001-Drop-third-party-code-in-CMakeLists.txt.patch
 Patch2:		shaderc-2020.4-system-libs.patch
 
-BuildRequires:  cmake
+BuildRequires:	cmake
 BuildRequires:	ninja
-BuildRequires:  glslang-devel >= 10.11.0.0
-BuildRequires:  pkgconfig(SPIRV-Tools)
-BuildRequires:  python
-BuildRequires:  spirv-headers
+BuildRequires:	glslang-devel >= 10.11.0.0
+BuildRequires:	pkgconfig(SPIRV-Tools)
+BuildRequires:	python
+BuildRequires:	spirv-headers
 
 %description
 A collection of tools, libraries and tests for shader compilation.
@@ -34,31 +34,31 @@ Shaderc aims to to provide:
  - increased functionality such as file #include support
 
 %package -n glslc
-Summary:        A command line compiler for GLSL/HLSL to SPIR-V
-Group:          Development/Tools
+Summary:	A command line compiler for GLSL/HLSL to SPIR-V
+Group:		Development/Tools
 
 %description -n glslc
 A command line compiler for GLSL/HLSL to SPIR-V.
 
 %package -n %{libname}
-Summary:        A library for compiling shader strings into SPIR-V
-Group:          System/Libraries
+Summary:	A library for compiling shader strings into SPIR-V
+Group:		System/Libraries
 
 %description -n %{libname}
 A library for compiling shader strings into SPIR-V.
 
 %package -n %{devname}
-Summary:        Development files for libshaderc
-Group:          Development/C++
-Requires:       %{libname} = %{version}-%{release}
+Summary:	Development files for libshaderc
+Group:		Development/C++
+Requires:	%{libname} = %{version}-%{release}
 
 %description -n %{devname}
 A library for compiling shader strings into SPIR-V.
 Development files for libshaderc.
 
 %package -n %{staticname}
-Summary:        A library for compiling shader strings into SPIR-V (static libraries)
-Group:          Development/C++
+Summary:	A library for compiling shader strings into SPIR-V (static libraries)
+Group:		Development/C++
 
 %description -n %{staticname}
 A library for compiling shader strings into SPIR-V.
@@ -85,7 +85,10 @@ echo \"glslang 11.0.0 g\" >> glslc/src/build-version.inc
 %if 0
 #sed -i 's|SPIRV/GlslangToSpv.h|glslang/SPIRV/GlslangToSpv.h|' libshaderc_util/src/compiler.cc
 %endif
-%cmake -DSHADERC_SKIP_TESTS=ON -G Ninja
+%cmake \
+	-DSHADERC_SKIP_TESTS=ON \
+	-DSHADERC_SKIP_EXAMPLES=ON \
+	-G Ninja
 
 %build
 # We disable the tests because they don't work with our unbundling of 3rd party.
