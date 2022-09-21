@@ -12,7 +12,7 @@ License:	ASL 2.0
 URL:		https://github.com/google/shaderc
 Source0:	https://github.com/google/shaderc/archive/v%{version}/%{name}-%{version}.tar.gz
 # Patch to unbundle 3rd party code and use system libraries
-Patch1:		Drop-third-party-code-in-CMakeLists.txt+system_libs
+Patch1:		Drop-third-party-code-in-CMakeLists.txt+system_libs.patch
 
 BuildRequires:	cmake
 BuildRequires:	ninja
