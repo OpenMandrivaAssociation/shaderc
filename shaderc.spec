@@ -4,16 +4,15 @@
 %define staticname %mklibname %{name} -d -s
 
 Name:		shaderc
-Version:	2021.0
+Version:	2022.2
 Release:	1
 Summary:	A collection of tools, libraries, and tests for Vulkan shader compilation
 Group:		System/Libraries
 License:	ASL 2.0
 URL:		https://github.com/google/shaderc
 Source0:	https://github.com/google/shaderc/archive/v%{version}/%{name}-%{version}.tar.gz
-# Patch to unbundle 3rd party code
-Patch1:		https://src.fedoraproject.org/rpms/shaderc/raw/master/f/0001-Drop-third-party-code-in-CMakeLists.txt.patch
-Patch2:		shaderc-2020.4-system-libs.patch
+# Patch to unbundle 3rd party code and use system libraries
+Patch1:		Drop-third-party-code-in-CMakeLists.txt+system_libs
 
 BuildRequires:	cmake
 BuildRequires:	ninja
