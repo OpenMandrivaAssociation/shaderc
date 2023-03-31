@@ -5,7 +5,7 @@
 
 Name:		shaderc
 Version:	2022.4
-Release:	1
+Release:	2
 Summary:	A collection of tools, libraries, and tests for Vulkan shader compilation
 Group:		System/Libraries
 License:	ASL 2.0
