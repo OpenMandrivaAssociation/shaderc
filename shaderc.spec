@@ -4,7 +4,7 @@
 %define staticname %mklibname %{name} -d -s
 
 Name:		shaderc
-Version:	2025.4
+Version:	2025.5
 Release:	1
 Summary:	A collection of tools, libraries, and tests for Vulkan shader compilation
 Group:		System/Libraries
